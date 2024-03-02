@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../css/style.css" />
+        <link rel="stylesheet" href="../css/index.css" />
+
+        <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+
+      
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Album</title>
+    </head>
+    <div class="header">
+        <ul>
+            <li><a href="/">album</a></li>
+            <li><a href="/locations">Location</a></li>
+            <li><a href="/photographers">photographer</a></li>
+        </ul>
+    </div>
+    <body>
+        
+            <div 
+            class="container" 
+            style="display: flex;flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between;">
+                <h1>Albums</h1>
+                <button type="button" class="btn btn-dark">create new</button>
+        
+            </div>
+        
+            <hr>
+        
+        <div class="wrapper">
+
+            <div class="initail-album">
+                <a href="/album/0" class="card-link">
+                    <article class="card">
+                        
+                        <img
+                            style="border-radius: 50%;"
+                            src="https://cdn.pixabay.com/photo/2017/03/18/04/28/blue-sky-2153184_1280.jpg"
+                            alt="all image">
+                    </article>
+                </a>
+                <div style="display: flex;flex-direction: row;justify-content: space-around;align-items: center;">
+
+                    <p style="font-weight: bold;">
+                        all images
+                    </p>
+                    
+                </div>
+            </div>
+
+        <% for (let index=0; index < albums.length; index++){ %>
+
+                <div>
+                    <a href="/album/<%= albums[index].AlbumID %>" class="card-link">
+                        <article class="card">
+                            
+                            <img
+                                style="border-radius: 50%;"
+                                src="<%= photos.find((photo,a) => photo.AlbumID === albums[index].AlbumID)?.PhotoPath ;%> "
+                                alt="<%= photos[0]?.Caption %>">
+                                
+                        </article>
+                    </a>
+                    <span style="font-size: small;font-style: italic;align-self: center;display: flex;justify-content: center;">
+                        <%= moment(albums[index].createdAt).format('DD/MM/YYYY : HH:mm') %>
+                      </span>
+                    <div style="display: flex;flex-direction: row;justify-content: space-around;align-items: center;">
+
+                            <button type="button" name="edit-album"
+                                album-id="<%= albums[index].AlbumID %>" 
+                                album-des="<%= albums[index].Description %>" 
+                                album-name="<%= albums[index].AlbumName %>" 
+                                style="padding: 0;border: none;background: none;margin-top: -20px;">
+                                <i class="fa fa-pencil" style="font-size:36px;color: dimgrey;"></i>    
+                            </button>
+                        
+                             <p style="font-weight: bold;">
+                            <% if (albums[index].AlbumName.length > 14) { %>
+                                <%= albums[index].AlbumName.substring(0, 8) + "..." %>
+                              <% } else { %>
+                                <%= albums[index].AlbumName %>
+                              <% } %>
+                              
+                        </p>
+
+                        <form action="/albums/delete/<%= albums[index].AlbumID %>" method="post">
+                            <button type="submit" style="padding: 0;border: none;background: none;margin-top: -25px;"">
+                            <i class="fa fa-close" style="font-size:36px;color: red;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+        <%}%>
+    </div>
+
+    <!-- Modal create -->
+    <div
+      class="modal fade"
+      id="formModal"
+      tabindex="-1"
+      aria-labelledby="formModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="formModalLabel">Form Title</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Form Here -->
+            <form id="modalForm" action="/albums/create" method="post">
+              <!-- Add your form fields here -->
+              <input type="hidden" name="AlbumID" id="album-id">
+              <div class="mb-3">
+                <label for="album-name" class="col-form-label"
+                  >album Name:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="album-name"
+                  name="AlbumName"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="description-text" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  class="form-control"
+                  id="album-des"
+                  name="Description"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" form="modalForm" class="btn btn-success">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          var createButton = document.querySelector(".btn-dark");
+          createButton.addEventListener("click", function () {
+            var modalTitle = document.querySelector("#formModalLabel");
+            var modalForm = document.querySelector("#modalForm");
+            modalForm.reset();
+            modalTitle.textContent = "Create New";
+  
+            var myModal = new bootstrap.Modal(
+              document.getElementById("formModal"),
+              {
+                keyboard: false,
+              }
+            );
+            myModal.show();
+          });
+  
+          var editButtons = document.getElementsByName('edit-album')
+      editButtons.forEach(function(button, index) {
+        button.addEventListener("click", function(event) {
+          var modalForm = document.querySelector("#modalForm");
+          var modalTitle = document.querySelector("#formModalLabel");
+          
+
+          var album_id  = this.getAttribute('album-id');
+          var album_name  = this.getAttribute('album-name');
+          var album_des  = this.getAttribute('album-des');
+
+          console.log(album_name);
+
+          modalForm.action = `/albums/edit/${album_id}`;
+          modalTitle.textContent = "Edit Album";
+
+          document.getElementById("album-id").value = album_id;
+          document.getElementById("album-name").value = album_name;
+          document.getElementById("album-des").value = album_des;
+
+
+          
+
+          var myModal = new bootstrap.Modal(
+            document.getElementById("formModal"), {
+              keyboard: false,
+            }
+          );
+          myModal.show();
+        });
+
+      });
+        });
+      </script>
+      <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous">
+    </script>
+
+    </body>
+</html>

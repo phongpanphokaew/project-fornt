@@ -1,0 +1,301 @@
+<html>
+
+<head>
+  <title>Photo Gallery</title>
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,500i,700,800" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,900" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+
+  <link rel="stylesheet" type="text/css" href="../css/gallery.css" />
+
+</head>
+<div class="header">
+  <ul>
+    <li><a href="/">album</a></li>
+    <li><a href="/locations">Location</a></li>
+    <li><a href="/photographers">photographer</a></li>
+  </ul>
+</div>
+
+<body>
+
+  <div class="container">
+    <div style="display: flex;flex-direction: row; align-items: center;">
+      <h1>Photo/Gallery</h1>
+
+    </div>
+    <div style="display: flex;align-items: center;justify-content: space-between;">
+      <h3 style="padding-left: 10vh;font-weight: bolder;font-style: italic;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
+          <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+          <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z" />
+        </svg>
+        <%= albums.find(album => album.AlbumID === albumId)?.AlbumName ; %>
+      </h3>
+
+      <button type="button" class="btn btn-dark">create new</button>
+
+    </div>
+
+    <hr />
+    <div class="row">
+      <% for(var index = 0; index < photos.length; index++){
+        if (photos[index].AlbumID == albumId || albumId === 0){
+
+        %>
+      <div class="col-lg-4 col-sm-6">
+        <%
+          let ptgName = '';
+          let ptgBio = '';
+
+          let locateName = '';
+          let locateDes = '';
+          for(var ptg = 0; ptg < photographers.length; ptg++ ){
+            if(photographers[ptg].PhotographerID == photos[index].PhotographerID){
+              ptgName = photographers[ptg].Name;
+              ptgBio = photographers[ptg].Bio;
+              break;
+            }
+          }
+          for(var locate = 0; locate < locations.length; locate++ ){
+            if(locations[locate].LocationID == photos[index].LocationID){
+              locateName = locations[locate].LocationName;
+              locateDes = locations[locate].Description;
+              break;
+            }
+          }
+          %>
+        <div style="padding-left: 5px;padding-right: 10px;display: flex;justify-content: space-between;align-items: center;">
+          <h3 style="font-weight: bold;">
+            <% if (photos[index].Caption.length > 10) { %>
+              <%= photos[index].Caption.substring(0, 16) + "..." %>
+            <% } else { %>
+              <%= photos[index].Caption %>
+            <% } %>
+          </h3>
+          <form action="/photo/delete/<%= photos[index].PhotoID %>" method="post">
+            <input type="hidden" name="currentAlbumId" value="<%= albumId %>">
+            <button type="submit" style="padding: 0;border: none;background: none;">
+              <i class="fa fa-close" style="font-size:24px"></i>
+            </button>
+          </form>
+
+        </div>
+        <div class="thumbnail img-responsive">
+
+          <img class="modal-trigger" id="myImg" style="overflow: hidden" alt="<%= photos[index].Caption %>" src="<%= photos[index].PhotoPath %>" />
+
+
+        </div>
+        <br>
+        <div style="padding-left: 5px;padding-right: 15px;display: flex;justify-content: space-between;margin-bottom: -10px;">
+          <p style="font-style: italic;font-weight: 600;color: #3C3633;">
+            short by : <%= ptgName %>
+            <br>
+            <span style="font-size: small;font-style: italic;color: #747264;font-weight: 400;">
+              - <%= ptgBio%></span>
+          </p>
+          <!-- <form action="/pho/<%= photos[index].PhotoID %>" method="post">
+            <input type="hidden" name="currentAlbumId" value="<%= albumId %>">
+            <button type="submit" style="padding: 0;border: none;background: none;">
+              <i class="fa fa-pencil"></i>
+            </button>
+          </form> -->
+         
+            <button type="button" name="edit-photo" 
+              photo-id="<%= photos[index].PhotoID %>" 
+              album-id="<%= photos[index].AlbumID %>" 
+              ptg-id="<%= photos[index].PhotographerID %>" 
+              locate-id="<%= photos[index].LocationID %>" 
+              PhotoPath="<%= photos[index].PhotoPath %>" 
+              Caption="<%= photos[index].Caption %>" 
+              style="padding: 0;border: none;background: none;">
+              <i class="fa fa-pencil"></i>
+            </button>
+
+        </div>
+        <div style="padding-left: 5px;padding-right: 15px;display: flex;justify-content: space-between;margin-bottom: -10px;">
+          <p style="font-style: italic;font-weight: 600;color: #3C3633;">
+            At : <%=locateName %> - <%=locateDes %>
+          </p>
+        </div>
+
+        <div style="padding-left: 5px;padding-right: 15px;display: flex;justify-content: end;">
+          <p style="font-style: italic;font-weight: 500;padding-right: 10px;">
+            <span style="font-size: small;font-style: italic;">
+              <%= moment(photos[index].createdAt).format('DD/MM/YYYY : HH:mm') %>
+            </span>
+
+          </p>
+        </div>
+
+        <br>
+      </div>
+      <%
+        }
+        } %>
+
+    </div>
+
+  </div>
+
+  <!-- Modal create -->
+  <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formModalLabel">Form Title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="modalForm" method="post">
+            <input type="hidden" name="currentAlbumId" value="<%= albumId %>">
+            <div class="mb-3">
+              <label for="album-id" class="col-form-label">Album</label>
+              <select class="form-control" id="album-id" name="AlbumID">
+                <% for(let index = 0; index < albums.length; index++){ %>
+                <option value="<%= albums[index].AlbumID %>"><%= albums[index].AlbumName %></option>
+                <% } %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="photographer-id" class="col-form-label">Photographer</label>
+              <select class="form-control" id="photographer-id" name="PhotographerID">
+                <% for(let index = 0; index < photographers.length; index++){ %>
+                <option value="<%= photographers[index].PhotographerID %>"><%= photographers[index].Name %></option>
+                <% } %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="location-id" class="col-form-label">Location</label>
+              <select class="form-control" id="location-id" name="LocationID">
+                <% for(let index = 0; index < locations.length; index++){ %>
+                <option value="<%= locations[index].LocationID %>"><%= locations[index].LocationName %></option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="photo-path" class="col-form-label">Photo URL:</label>
+              <input type="url" class="form-control" id="photo-path" name="PhotoPath" />
+            </div>
+            <div class="mb-3">
+              <label for="caption-text" class="col-form-label">Caption:</label>
+              <input type="text" class="form-control" id="caption-text" name="Caption"></input type="text">
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="submit" form="modalForm" class="btn btn-success">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Img Modal -->
+<div id="img-modal" class="img-modal">
+  <span class="close">&times;</span>
+  <img class="img-modal-content" id="img01">
+  <div id="caption"></div>
+</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var createButton = document.querySelector(".btn-dark");
+
+      createButton.addEventListener("click", function() {
+        var modalTitle = document.querySelector("#formModalLabel");
+        var modalForm = document.querySelector("#modalForm");
+        modalForm.action = "/photo/create";
+        modalForm.reset();
+        modalTitle.textContent = "Create New";
+
+
+        var myModal = new bootstrap.Modal(
+          document.getElementById("formModal"), {
+            keyboard: false,
+          }
+        );
+        myModal.show();
+      });
+
+      var editButtons = document.getElementsByName('edit-photo')
+      editButtons.forEach(function(button, index) {
+        button.addEventListener("click", function(event) {
+          var modalForm = document.querySelector("#modalForm");
+          var modalTitle = document.querySelector("#formModalLabel");
+          
+
+          var photo_id  = this.getAttribute('photo-id');
+          var album_id  = this.getAttribute('album-id');
+          var ptg_id  = this.getAttribute('ptg-id');
+          var locate_id = this.getAttribute('locate-id');
+          var PhotoPath = this.getAttribute('PhotoPath');
+          var Caption =  this.getAttribute('Caption');
+
+          modalForm.action = `/photo/edit/${photo_id}`;
+          modalTitle.textContent = "Edit photo";
+
+          document.getElementById("album-id").value = album_id;
+          document.getElementById("photographer-id").value = ptg_id;
+          document.getElementById("location-id").value = locate_id;
+          document.getElementById("photo-path").value = PhotoPath;
+          document.getElementById("caption-text").value = Caption;
+
+          
+
+          var myModal = new bootstrap.Modal(
+            document.getElementById("formModal"), {
+              keyboard: false,
+            }
+          );
+          myModal.show();
+        });
+
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  <!-- imp popup -->
+  <script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    var modal = document.getElementById("img-modal");
+    var images = document.getElementsByClassName("modal-trigger");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+
+    // Convert HTMLCollection to Array to use forEach
+    Array.from(images).forEach(function(img) {
+        img.onclick = function() {
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+            document.body.style.overflow = 'hidden'; // Hide scrollbar
+        };
+    });
+
+
+    var span = document.getElementsByClassName("close")[0];
+
+    span.onclick = function() { 
+        modal.style.display = "none";
+        document.body.style.overflow = 'auto'; 
+    };
+});
+
+
+    </script>
+</body>
+
+</html>
