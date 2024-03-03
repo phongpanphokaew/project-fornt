@@ -6,7 +6,7 @@ const app = express();
 var bodyParser = require('body-parser');
 
 // const base_url = "http://localhost:3000/api";
-const base_url = "http://node59699-back-end.proen.app.ruk-com.cloud:11948/api";
+const base_url = "http://node59699-back-end.proen.app.ruk-com.cloud/api";
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
